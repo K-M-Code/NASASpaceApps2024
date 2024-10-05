@@ -3,6 +3,7 @@ import postgres from "postgres";
 
 export async function POST(request: Request){
     try{  
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {queryArr, pgUser, pgName, pgAddress, pgPassword} = await request.json()
     const nasaSql = postgres({
         host: pgAddress,
