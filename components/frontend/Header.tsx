@@ -27,7 +27,7 @@ export default function Component() {
               <Link
                 key={route.label}
                 href={route.href}
-                className='text-lg font-medium underline-offset-4 hover:underline'
+                className='text-lg font-medium uppercase underline-offset-4 hover:underline'
                 prefetch={false}
               >
                 {route.label}
@@ -36,18 +36,18 @@ export default function Component() {
           </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant='outline' size='icon' className='lg:hidden'>
+              <Button variant='default' size='icon' className='lg:hidden'>
                 <MenuIcon className='h-6 w-6' />
                 <span className='sr-only'>Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side='left'>
+            <SheetContent side='right'>
               <div className='grid w-[200px] p-4'>
                 {siteLinks.map(route => (
                   <Link
                     key={route.label}
                     href={route.href}
-                    className='text-lg font-medium underline-offset-4 hover:underline'
+                    className='text-lg font-medium uppercase underline-offset-4 hover:underline my-4 pl-4 border-l-4 border-tertiary hover:border-white'
                     prefetch={false}
                   >
                     {route.label}
