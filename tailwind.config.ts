@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,6 +11,9 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+			primary: 'var(--primary)',
+			secondary: 'var(--secondary)',
+			tertiary: 'var(--tertiary)',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -20,14 +24,14 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--popover))',
   				foreground: 'hsl(var(--popover-foreground))'
   			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
+  			// primary: {
+  			// 	DEFAULT: 'hsl(var(--primary))',
+  			// 	foreground: 'hsl(var(--primary-foreground))'
+  			// },
+  			// secondary: {
+  			// 	DEFAULT: 'hsl(var(--secondary))',
+  			// 	foreground: 'hsl(var(--secondary-foreground))'
+  			// },
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'
@@ -58,6 +62,9 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
 };
 export default config;
