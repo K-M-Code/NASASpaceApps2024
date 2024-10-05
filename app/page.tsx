@@ -1,7 +1,7 @@
 // import Image from "next/image";
 import HeroSection from "@/components/frontend/HeroSection";
 import Header from "@/components/frontend/Header";
-import InfoSection1 from "@/components/frontend/InfoSection1";
+import InfoSection from "@/components/frontend/InfoSection";
 
 
 
@@ -10,7 +10,7 @@ export default function Home() {
     <>
       <Header/>
       <HeroSection />
-      <InfoSection1 />
+      <InfoSection />
     </>
   );
 }
