@@ -1,12 +1,11 @@
+import OrreryScene from "./OrreryScene";
 import Header from "@/components/frontend/Header";
 
-const orreyPage = () => {
+export default function orreryPage() {
     return (
         <>
         <Header />
-        <h1 className="text-3xl font-bold text-white underline">Orrery Page</h1>
+        <OrreryScene/>
         </>
     );
-};
-
-export default orreyPage;
+  }
