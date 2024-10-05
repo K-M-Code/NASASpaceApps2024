@@ -6,10 +6,10 @@ import heroBG from '@/public/image/HeroBG2.jpg'
 
 const HeroSection = () => {
   return (
-    <section className='min-h-screen lg:max-h-[700px]'>
+    <section className='min-h-screen md:min-h-[95vh] lg:min-h[50vh] lg:max-h-[600px]'>
       <div className='text-white'>
       <Image
-                className='absolute object-cover top-0 left-0 w-screen min-h-screen lg:max-h-[700px] -z-10'
+                className='absolute object-cover top-0 left-0 w-screen min-h-screen lg:max-h-[600px] -z-10'
                 src={heroBG}
                 alt='Image'
                 // sizes='100vw'
