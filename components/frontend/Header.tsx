@@ -27,7 +27,7 @@ export default function Component() {
               <Link
                 key={route.label}
                 href={route.href}
-                className='text-lg font-medium uppercase underline-offset-4 hover:underline'
+                className='text-lg font-medium uppercase border-b-4 border-tertiary hover:border-white'
                 prefetch={false}
               >
                 {route.label}

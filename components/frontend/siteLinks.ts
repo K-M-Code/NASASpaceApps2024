@@ -2,7 +2,7 @@
     { label: 'Home', href: '/' },
     // { label: 'About', href: '#' },
     { label: 'Orrery', href: 'orrery' },
-    { label: 'Games', href: '#' }
+    { label: 'Games', href: 'games' }
     // { label: 'Contact', href: '#' }
     ]
 
