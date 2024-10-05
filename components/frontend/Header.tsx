@@ -5,15 +5,13 @@ import { Button } from '@/components/ui/button'
 import { JSX, SVGProps } from 'react'
 import AsteroidLogo from '@/public/image/asteroid.svg'
 import Image from 'next/image'
+import siteLinks from '@/components/frontend/siteLinks'
 
 // Define routes and URLs as an array
-const routes = [
-  { label: 'Home', href: '/' },
-  // { label: 'About', href: '#' },
-  { label: 'Orrery', href: 'orrery' },
-  { label: 'Games', href: '#' },
-  // { label: 'Contact', href: '#' }
-]
+interface Route {
+  label: string
+  href: string
+}
 
 export default function Component() {
   return (
@@ -25,7 +23,7 @@ export default function Component() {
             <span className='text-lg font-semibold'>Orrery VAMK&apos;d</span>
           </Link>
           <div className='hidden gap-4 md:flex'>
-            {routes.map(route => (
+            {siteLinks.map((route: Route) => (
               <Link
                 key={route.label}
                 href={route.href}
@@ -45,7 +43,7 @@ export default function Component() {
             </SheetTrigger>
             <SheetContent side='left'>
               <div className='grid w-[200px] p-4'>
-                {routes.map(route => (
+                {siteLinks.map(route => (
                   <Link
                     key={route.label}
                     href={route.href}
