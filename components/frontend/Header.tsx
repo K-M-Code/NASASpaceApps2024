@@ -9,10 +9,10 @@ import Image from 'next/image'
 // Define routes and URLs as an array
 const routes = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '#' },
+  // { label: 'About', href: '#' },
   { label: 'Orrery', href: 'orrery' },
   { label: 'Games', href: '#' },
-  { label: 'Contact', href: '#' }
+  // { label: 'Contact', href: '#' }
 ]
 
 export default function Component() {
