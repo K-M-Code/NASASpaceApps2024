@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Image from 'next/image'
 // import heroImage1 from '@/public/image/Hero1.png'
 // import heroImage2 from '@/public/image/Hero2.png'
@@ -25,12 +26,12 @@ const HeroSection = () => {
             <p className='mb-4 text-xl text-white drop-shadow-md md:text-2xl'>
               Our attempt at the Orrery Web App Challenge
             </p>
-            <a
-              href='#'
+            <Link
+              href='orrery'
               className='rounded bg-primary px-4 py-2 text-black shadow-lg hover:border-transparent hover:bg-white hover:text-secondary hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out'
             >
               Explore Now
-            </a>
+            </Link>
           </div>
           <div className='mb-6 ml-0 mt-12 justify-center p-8 md:mb-0 md:ml-12 md:mt-0 lg:w-2/3'>
             <div className='flex h-48 flex-wrap content-center'>
