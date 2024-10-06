@@ -3,10 +3,10 @@ import postgres from "postgres";
 
 export async function POST(request: Request){
     try{
-        const {apiArr, pgUser, pgName, pgAddress, pgPassword} = await request.json()
+        const {apiArr} = await request.json()
         const returnArr = []
         for(const api of apiArr){
-            returnArr.push(await pgPost(api, pgUser, pgName, pgAddress, pgPassword))
+            returnArr.push(await pgPost(api))
         };
         return NextResponse.json({message:returnArr})   
     }
@@ -18,8 +18,11 @@ export async function POST(request: Request){
 }
 
 
-async function pgPost(api: string, pgUser: string, pgName: string, pgAddress: string, pgPassword: string){
-    
+async function pgPost(api: string){
+    const pgUser = process.env.PG_USER
+    const pgAddress = process.env.PG_ADDRESS
+    const pgPassword = process.env.PG_PASSWORD
+
     const sql = postgres({ host: pgAddress, username: pgUser, password: pgPassword, port: 5432 });
 
     const dbCheck = await sql`
