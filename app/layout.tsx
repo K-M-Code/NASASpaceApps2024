@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Orrery Web App",
-  description: "NASA Space Apps Hackathon 2024 - Team VAMK'd",
+  title: "Orrery Web App by Team VAMK'd",
+  description: "NASA Space Apps Hackathon 2024 - Orrery Web App Challenge - Team VAMK'd - Vaasa, Finland",
 };
 
 export default function RootLayout({
