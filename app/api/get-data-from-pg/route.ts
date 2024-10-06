@@ -4,8 +4,11 @@ import postgres from "postgres";
 export async function POST(request: Request){
     try{  
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {queryArr, pgUser, pgName, pgAddress, pgPassword} = await request.json()
-    const nasaSql = postgres({
+        const {queryArr} = await request.json()
+        const pgUser = process.env.PG_USER
+        const pgAddress = process.env.PG_ADDRESS
+        const pgPassword = process.env.PG_PASSWORD
+        const nasaSql = postgres({
         host: pgAddress,
         username: pgUser,
         password: pgPassword,
