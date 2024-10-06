@@ -1,62 +1,67 @@
 "use client"
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; 
 import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import * as threeJS from 'three';
+import { celestialXAxis, eclInclination, initialFieldOfView, initialPoint, initMaxDistance, initMinDistance } from '@/helpers/constants';
+import { sceneSetup } from '@/helpers/scene/sceneSetup';
+import { galaxySetup } from '@/helpers/scene/bigBang';
 
-const OrreryScene: React.FC = () => {
+const OrreryScene = () => {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 20);
+    const { scene, camera, renderer, controls } = sceneSetup(mountRef);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    if (mountRef.current) {
-      mountRef.current.appendChild(renderer.domElement);
-    }
 
-    // Controls for orbiting
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+    // Materials 
+    const textureLoader = new threeJS.TextureLoader();
+    const selectedPathMat = new threeJS.LineBasicMaterial({ color: 0x3366ff, linewidth: 1.5, transparent:true, opacity: 0.7 });
+    // const defaultMaterial = new threeJS.MeshStandardMaterial({ map: textureLoader.load('data/1k_eris_fictional.jpg')});
+    const pointMaterial = new threeJS.PointsMaterial( { color: 0xffffff, alphaMap: textureLoader.load('/resources/disc.png'), size: initialPoint, transparent: true } );
+    const darkMaterial = new threeJS.MeshBasicMaterial( { color: 0x000000 } );
+    const transparentMaterial = new threeJS.LineBasicMaterial( { transparent: true, opacity: 0 } );
 
-    // Light source (Sun emits light)
-    const sunLight = new THREE.PointLight(0xffffff, 700, 100);
-    sunLight.position.set(0, 0, 0);
-    scene.add(sunLight);
+   
 
-    // Helper function to load textures
-    const textureLoader = new THREE.TextureLoader();
+
+
+    // Orbit paths materials
+    let pathMaterials = [
+      new threeJS.LineBasicMaterial({ color: 0x0033ff, linewidth: 1, transparent:true, opacity: 0.5 }),
+      new threeJS.LineBasicMaterial({ color: 0x0033ff, linewidth: 1, transparent:true, opacity: 0.35 }),
+      new threeJS.LineBasicMaterial({ color: 0x0033ff, linewidth: 1, transparent:true, opacity: 0.3 }),
+      new threeJS.LineBasicMaterial({ color: 0x0033ff, linewidth: 1, transparent:true, opacity: 0.25 }),
+      new threeJS.LineBasicMaterial({ color: 0x0033ff, linewidth: 1, transparent:true, opacity: 0.2 })
+    ];
 
     // Helper function to create planets
     const createPlanet = (size: number, texturePath: string, positionX: number, emissiveColor?: number) => {
-      const materialConfig: THREE.MeshStandardMaterialParameters = {
+      const materialConfig: threeJS.MeshStandardMaterialParameters = {
         map: textureLoader.load(texturePath),
       };
 
       // Add emissive property if specified
       if (emissiveColor) {
-        materialConfig.emissive = new THREE.Color(emissiveColor);
+        materialConfig.emissive = new threeJS.Color(emissiveColor);
         materialConfig.emissiveIntensity = 1;
       }
 
-      const geometry = new THREE.SphereGeometry(size, 32, 32);
-      const material = new THREE.MeshStandardMaterial(materialConfig);
-      const planet = new THREE.Mesh(geometry, material);
+      const geometry = new threeJS.SphereGeometry(size, 32, 32);
+      const material = new threeJS.MeshStandardMaterial(materialConfig);
+      const planet = new threeJS.Mesh(geometry, material);
       planet.position.x = positionX;
       return planet;
     };
 
     // Sun with emissive material
-    const sun = createPlanet(2, '/sun.jpg', 0, 0xffff00); // Emissive yellow
+    const sun = createPlanet(2, '/resources/sun.jpg', 0); // Emissive yellow
+
     scene.add(sun);
 
     // Add glowing atmosphere for Sun
     const createGlow = (size: number, color: string) => {
-      const atmosphereMaterial = new THREE.ShaderMaterial({
+      const atmosphereMaterial = new threeJS.ShaderMaterial({
         vertexShader: `
           varying vec3 vertexNormal;
           void main() {
@@ -71,15 +76,15 @@ const OrreryScene: React.FC = () => {
             gl_FragColor = vec4(${color}, 1.0) * intensity;
           }
         `,
-        blending: THREE.AdditiveBlending,
-        side: THREE.BackSide,
+        blending: threeJS.AdditiveBlending,
+        side: threeJS.BackSide,
         transparent: true,
       });
-      return new THREE.Mesh(new THREE.SphereGeometry(size, 32, 32), atmosphereMaterial);
+      return new threeJS.Mesh(new threeJS.SphereGeometry(size, 32, 32), atmosphereMaterial);
     };
 
-    // Glow effect for the sun
-    scene.add(createGlow(3, '1.0, 0.8, 0.0')); // Sun (yellowish)
+    // // Glow effect for the sun
+    // scene.add(createGlow(3, '1.0, 0.8, 0.9')); // Sun (yellowish)
 
     // Planets
     const mercury = createPlanet(0.2, '/planets/mercury.jpg', 4);
@@ -104,13 +109,13 @@ const OrreryScene: React.FC = () => {
     scene.add(createGlow(0.7, '0.2, 0.6, 1.0')); // Neptune
 
     // Saturn's ring
-    const ringGeometry = new THREE.RingGeometry(1.5, 2.5, 64);
-    const ringMaterial = new THREE.MeshBasicMaterial({
+    const ringGeometry = new threeJS.RingGeometry(1.5, 2.5, 64);
+    const ringMaterial = new threeJS.MeshBasicMaterial({
       map: textureLoader.load('/planets/saturn_ring.png'),
-      side: THREE.DoubleSide,
+      side: threeJS.DoubleSide,
       transparent: true,
     });
-    const saturnRing = new THREE.Mesh(ringGeometry, ringMaterial);
+    const saturnRing = new threeJS.Mesh(ringGeometry, ringMaterial);
     saturnRing.rotation.x = Math.PI / 2;
     saturn.add(saturnRing);
 
