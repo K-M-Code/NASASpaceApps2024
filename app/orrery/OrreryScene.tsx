@@ -9,9 +9,12 @@ import {
   Line,
   BufferGeometry,
   LineBasicMaterial,
-  Vector3
+  Vector3,
+  Group,
+  TextureLoader
 } from 'three'
-import { getMarsPosition, getSaturnPosition } from '@/helpers/physics/kepler'
+import { propagate} from '@/helpers/physics/kepler'
+import { getPlanets } from '@/helpers/physics/bigbang'
 
 const OrreryScene = () => {
   const mountRef = useRef<HTMLDivElement | null>(null)
@@ -19,79 +22,76 @@ const OrreryScene = () => {
   useEffect(() => {
     const { scene, camera, renderer, controls } = sceneSetup(mountRef)
 
-    // Group sun = uafgoudfoguhdfg
-    arrays 
+    async function load(){
+      const planets = await getPlanets()
+    
+    const planetGroups: { [key: string]: Group } = {}
+    const planetMeshes = {}
+    
+    const textureLoader = new TextureLoader()
 
-    scene.add(groupedSun, groupedMars); //do that 
-
-    for each PLANET ( add to the scene )
-
-    // Create Sun
-    const sunGeometry = new SphereGeometry(0.5, 32, 32) // Larger sun
+    const sunGeometry = new SphereGeometry(0.1, 32, 32) // Larger sun
     const sunMaterial = new MeshBasicMaterial({ color: 0xffd700 })
     const sun = new Mesh(sunGeometry, sunMaterial)
     scene.add(sun)
 
-    // Create Mars
-    const marsGeometry = new SphereGeometry(0.1, 32, 32)
-    const marsMaterial = new MeshBasicMaterial({ color: 0xffd700 })
-    const mars = new Mesh(marsGeometry, marsMaterial)
-    scene.add(mars)
+    for (const planet of planets){
+      const geometry = new SphereGeometry(planet.GEOMETRY[0], planet.GEOMETRY[1], planet.GEOMETRY[2])
+      
+      let texture = textureLoader.load(`resources/${planet.NAME}.jpg`)
+      if (!texture){
+        texture = textureLoader.load('/resources/asteroid.jpg')
+      }
+      
+      
+      // If there's a texture, use it in MeshBasicMaterial, otherwise fallback to color
+      const material = texture
+        ? new MeshBasicMaterial({ map: texture }) // Use texture
+        : new MeshBasicMaterial({ color: planet.COLOR })
+      
+      const mesh = new Mesh(geometry, material)
+      
+      const planetGroup = new Group()
+      planetGroup.add(mesh)
 
-    // Create Saturn
-    const saturnGeometry = new SphereGeometry(0.2, 32, 32) // Larger Saturn
-    const saturnMaterial = new MeshBasicMaterial({ color: 0xffa500 })
-    const saturn = new Mesh(saturnGeometry, saturnMaterial)
-    scene.add(saturn)
+      planetGroups[planet.NAME] = planetGroup;
+      planetMeshes[planet.NAME] = mesh;
 
-    // Create Mars orbit line
-    const marsOrbitPoints = new BufferGeometry()
-    const orbitMaterial = new LineBasicMaterial({ color: 0xaaaaaa })
-    const marsPoints = []
-    const numMarsPoints = 500
+      if (planet.ORBIT){
+        const orbitPoints = new BufferGeometry()
+        const orbitMaterial = new LineBasicMaterial({ color: planet.ORBIT.COLOR })
+        const pointsArr = []
 
-    for (let i = 0; i <= numMarsPoints; i++) {
-      const time = (i / numMarsPoints) * 687
-      const position = getMarsPosition(time)
-      marsPoints.push(new Vector3(position.x, position.y, 0))
+        for (let i = 0; i <= planet.ORBIT.LINE; i++) {
+          const time = (i / planet.ORBIT.LINE) * planet.ORBIT.ORBITAL_PERIOD
+          const position = propagate(time, planet.ORBIT.SEMI_MAJOR_AXIS, planet.ORBIT.ECCENTRICITY,planet.ORBIT.ORBITAL_PERIOD,0)
+          pointsArr.push(new Vector3(position.x, position.y, 0))
+        }
+
+        orbitPoints.setFromPoints(pointsArr)
+        const orbitLine = new Line(orbitPoints, orbitMaterial)
+        planetGroup.add(orbitLine)
+      }
+
+      scene.add(planetGroup)
     }
-
-    marsOrbitPoints.setFromPoints(marsPoints)
-    const marsOrbitLine = new Line(marsOrbitPoints, orbitMaterial)
-    scene.add(marsOrbitLine)
-
-    // Create Saturn orbit line
-    const saturnOrbitPoints = new BufferGeometry()
-    const saturnPoints = []
-    const numSaturnPoints = 500
-
-    for (let i = 0; i <= numSaturnPoints; i++) {
-      const time = (i / numSaturnPoints) * 10746.25
-      const position = getSaturnPosition(time)
-      saturnPoints.push(new Vector3(position.x, position.y, 0))
-    }
-
-    saturnOrbitPoints.setFromPoints(saturnPoints)
-    const saturnOrbitLine = new Line(saturnOrbitPoints, orbitMaterial)
-    scene.add(saturnOrbitLine)
 
     // Setup camera
     camera.position.z = 15
 
-    // Animate Mars and Saturn orbits around the Sun
+    // Animate Objects orbits around the Sun
     const clock = new Clock()
     const animate = function () {
       requestAnimationFrame(animate)
 
-      // Mars movement
-      const marsTime = clock.getElapsedTime() * 10 // Speed factor for visible animation
-      const marsPosition = getMarsPosition(marsTime)
-      mars.position.set(marsPosition.x, marsPosition.y, 0)
 
-      // Saturn movement
-      const saturnTime = clock.getElapsedTime() * 1 // Slower speed factor for Saturn
-      const saturnPosition = getSaturnPosition(saturnTime)
-      saturn.position.set(saturnPosition.x, saturnPosition.y, 0)
+      for (const planet of planets){
+        if(planet.ORBIT){
+          const time = clock.getElapsedTime() * 10 // Speed factor for visible animation
+          const planetPosition = propagate(time, planet.ORBIT.SEMI_MAJOR_AXIS, planet.ORBIT.ECCENTRICITY,planet.ORBIT.ORBITAL_PERIOD,0)
+          planetMeshes[planet.NAME].position.set(planetPosition.x, planetPosition.y, 0)
+        }
+      }
 
       // Render scene
       renderer.render(scene, camera)
@@ -113,7 +113,9 @@ const OrreryScene = () => {
         mountRef.current.removeChild(renderer.domElement)
       }
     }
-  }, [])
+}
+load()
+}, [])
 
   return <div ref={mountRef} style={{ width: '100svw', height: '100vh' }} />
 }

@@ -1,72 +1,65 @@
-import { Vector2 } from "three";
+import * as THREE from 'three'
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const UnixTimeZeroInMJD = 40587; // UNIX time zero as Modified Julian Date
-const J2KInMJD = 51544.5; // Modified Julian Date of January 1, 2000
-const DayInMillis = 86400000; // miliseconds per day
-
-export function solveKepler(M: number, e: number) {
-  let result = 0
-  let lastResult, delta
-  const tolerance = 0.00000001
-  do {
-    lastResult = result
-    result = M + e * Math.sin(result)
-    delta = result - lastResult
-  } while (Math.abs(delta) > tolerance)
-  return result
+// KeplerStart3 equivalent in JS
+export function KeplerStart3(e:number, M:number) {
+  const t34 = e * e
+  const t35 = e * t34
+  const t33 = Math.cos(M)
+  return M + (-0.5 * t35 + e + (t34 + 1.5 * t33 * t35) * t33) * Math.sin(M)
 }
 
-export function calculateTrueAnomaly(E: number, e: number) {
-  return (
-    2 *
-    Math.atan2(
-      Math.sqrt(1 + e) * Math.sin(E / 2),
-      Math.sqrt(1 - e) * Math.cos(E / 2)
-    )
-  )
+// KeplerSolve equivalent in JS
+export function eps3(e: number, M:number, x:number) {
+  const t1 = Math.cos(x)
+  const t2 = -1 + e * t1
+  const t3 = Math.sin(x)
+  const t4 = e * t3
+  const t5 = -x + t4 + M
+  const t6 = t5 / ((0.5 * t5 * t4) / t2 + t2)
+  return t5 / ((0.5 * t3 - (1 / 6) * t1 * t6) * e * t6 + t2)
 }
 
-export function plotPoint(meanAnomaly: any, eccentricity: number, semiMajorAxis: number, runKepler: any) {
-    const eccentricityAnomaly = (runKepler && orbitPlot.points == 1) ? solveKepler(eccentricity, meanAnomaly) : meanAnomaly;
-    const localPoint = new Vector2( semiMajorAxis * (Math.cos(eccentricityAnomaly) - eccentricity), semiMajorAxis * Math.sqrt(1 - eccentricity * eccentricity) * Math.sin(eccentricityAnomaly));
-    return localPoint;
+export function KeplerSolve(e:number, M:number) {
+  const tol = 1.0e-14
+  const Mnorm = M % (2 * Math.PI)
+  let E0 = KeplerStart3(e, Mnorm)
+  let dE = tol + 1
+  let count = 0
+
+  while (dE > tol) {
+    const E = E0 - eps3(e, Mnorm, E0)
+    dE = Math.abs(E - E0)
+    E0 = E
+    count++
+    if (count === 100) {
+      console.log('KeplerSolve failed to converge')
+      break
+    }
+  }
+  return E0
 }
 
-export function calculatePosition(a: number, trueAnomaly: number) {
-  const x = a * Math.cos(trueAnomaly)
-  const y = a * Math.sin(trueAnomaly)
-  return { x, y } // Ensure this returns an object with 'x' and 'y' properties
-}
+// Function to propagate orbit
+export function propagate(clock: number, a:number,e:number, T:number, tau:number) {
+  const n = (2 * Math.PI) / T // Mean motion
+  const M = n * (clock - tau) // Mean anomaly
+  const E = KeplerSolve(e, M) // Eccentric anomaly
+  const cose = Math.cos(E)
 
-// Mars' orbital parameters
-const marsOrbit = {
-  semiMajorAxis: 1.524, // AU (astronomical units)
-  eccentricity: 0.0934, // Mars eccentricity
-  orbitalPeriod: 687 // Mars orbital period in Earth days
-}
+  const r = a * (1 - e * cose)
+  const s_x = r * ((cose - e) / (1 - e * cose))
+  const s_y = r * ((Math.sqrt(1 - e * e) * Math.sin(E)) / (1 - e * cose))
+  const s_z = 0 // Initially no z-component in 2D
 
-// Saturn's orbital parameters
-const saturnOrbit = {
-  semiMajorAxis: 9.58, // AU (astronomical units)
-  eccentricity: 0.0565, // Saturn eccentricity
-  orbitalPeriod: 10746.25 // Saturn orbital period in Earth days
-}
+  // Apply rotations: Pitch (Y-axis), Yaw (Z-axis), Roll (X-axis)
+  const point = new THREE.Vector3(s_x, s_y, s_z)
+  const pitchMatrix = new THREE.Matrix4().makeRotationY(Math.PI / 5)
+  const yawMatrix = new THREE.Matrix4().makeRotationZ(Math.PI / 4)
+  const rollMatrix = new THREE.Matrix4().makeRotationX(Math.PI / 4)
 
-// Calculate Mars' position
-export function getMarsPosition(time: number) {
-  const meanMotion = (2 * Math.PI) / marsOrbit.orbitalPeriod
-  const M = meanMotion * time
-  const E = solveKepler(M, marsOrbit.eccentricity)
-  const trueAnomaly = calculateTrueAnomaly(E, marsOrbit.eccentricity)
-  return calculatePosition(marsOrbit.semiMajorAxis, trueAnomaly)
-}
+  point.applyMatrix4(pitchMatrix) // Pitch
+  point.applyMatrix4(yawMatrix) // Yaw
+  point.applyMatrix4(rollMatrix) // Roll
 
-// Calculate Saturn's position
-export function getSaturnPosition(time: number) {
-  const meanMotion = (2 * Math.PI) / saturnOrbit.orbitalPeriod
-  const M = meanMotion * time
-  const E = solveKepler(M, saturnOrbit.eccentricity)
-  const trueAnomaly = calculateTrueAnomaly(E, saturnOrbit.eccentricity)
-  return calculatePosition(saturnOrbit.semiMajorAxis, trueAnomaly)
+  return point
 }
