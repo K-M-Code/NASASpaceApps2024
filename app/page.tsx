@@ -1,15 +1,21 @@
-import Image from "next/image";
+// import Image from "next/image";
+import HeroSection from "@/components/frontend/HeroSection";
+import Header from "@/components/frontend/Header";
+import InfoSection from "@/components/frontend/InfoSection";
+import Footer from "@/components/frontend/Footer";
+import HomeContent from "@/components/frontend/HomeContent";
+import FAQSection from "@/components/frontend/FAQSection";
+
 
 export default function Home() {
   return (
-    <div>
-      <Image
-        src="/vercel.svg"
-        alt="Vercel Logo"
-        width={72}
-        height={16}
-        priority
-      />
-    </div>
+    <>
+      <Header/>
+      <HeroSection />
+      <HomeContent />
+      <InfoSection />
+      <FAQSection />
+      <Footer />
+    </>
   );
 }
