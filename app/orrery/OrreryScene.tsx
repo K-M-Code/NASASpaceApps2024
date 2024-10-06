@@ -20,13 +20,13 @@ const OrreryScene = () => {
   const mountRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const { scene, camera, renderer, controls } = sceneSetup(mountRef)
+    const { scene, camera, renderer } = sceneSetup(mountRef)
 
     async function load(){
       const planets = await getPlanets()
     
-    const planetGroups: { [key: string]: Group } = {}
-    const planetMeshes = {}
+    const planetGroups: { [key: string]: Group } = {};
+    const planetMeshes: { [key: string]: Mesh } = {}
     
     const textureLoader = new TextureLoader()
 
