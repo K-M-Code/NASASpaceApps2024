@@ -7,7 +7,7 @@ import heroBG from '@/public/image/HeroBG2.jpg'
 
 const HeroSection = () => {
   return (
-    <section className='min-h-screen md:min-h-[95vh] lg:min-h[50vh] lg:max-h-[600px]'>
+    <section className='min-h-[75vh] md:min-h-[75svh] lg:min-h[50vh] lg:max-h-[500px]'>
       <div className='text-white'>
       <Image
                 className='absolute object-cover top-0 left-0 w-screen min-h-screen lg:max-h-[600px] -z-10'
@@ -15,9 +15,9 @@ const HeroSection = () => {
                 alt='Image'
                 // sizes='100vw'
               />
-        <div className='container mx-auto my-12 flex flex-col items-center md:my-24 md:flex-row'>
-          <div className='flex w-full flex-col items-start justify-center p-8 lg:w-1/3'>
-            <h1 className='tracking-loose py-2 text-4xl text-yellow-300 md:text-5xl'>
+        <div className='container mx-auto mt-60 flex flex-col items-center md:mt-72 md:flex-row '>
+          <div className='flex w-full flex-col items-start justify-center p-8 lg:w-1/2'>
+            <h1 className='py-2 text-4xl text-yellow-300 md:text-5xl'>
               NASA Space Apps 2024
             </h1>
             <h2 className='mb-2 text-4xl leading-relaxed md:text-5xl md:leading-snug'>
@@ -33,8 +33,8 @@ const HeroSection = () => {
               Explore Now
             </Link>
           </div>
-          <div className='mb-6 ml-0 mt-12 justify-center p-8 md:mb-0 md:ml-12 md:mt-0 lg:w-2/3'>
-            <div className='flex h-48 flex-wrap content-center'>
+          <div className='mb-6 ml-0 mt-12 justify-center p-8 md:mb-0 md:ml-12 md:mt-0 lg:w-1/2'>
+            <div className='flex  flex-wrap content-center'>
 
             </div>
           </div>
