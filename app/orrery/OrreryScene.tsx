@@ -1,103 +1,76 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { sceneSetup } from '@/helpers/scene/sceneSetup'
-import {
-  SphereGeometry,
-  MeshBasicMaterial,
-  Mesh,
-  Clock,
-  Line,
-  BufferGeometry,
-  LineBasicMaterial,
-  Vector3
-} from 'three'
-import { getMarsPosition, getSaturnPosition } from '@/helpers/physics/kepler'
+import * as THREE from 'three'
+import { propagate } from '@/helpers/physics/kepler'
 
 const OrreryScene = () => {
   const mountRef = useRef<HTMLDivElement | null>(null)
+  const planetMeshes = useRef([]) // Local array to store planet meshes
+  const timeRef = useRef(0) // Ref to keep track of time
 
   useEffect(() => {
-    const { scene, camera, renderer, controls } = sceneSetup(mountRef)
+    const { scene, camera, renderer } = sceneSetup(mountRef)
+  
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(5, 5, 5);
+    scene.add(light);
 
-    // Group sun = uafgoudfoguhdfg
-    arrays 
+    // Orbital parameters
+    const a = 1; // semi-major axis
+    const e = 0.7; // eccentricity
+    const T = 120; // Orbital period in seconds
+    const tau = 0; // Time of pericenter passage
 
-    scene.add(groupedSun, groupedMars); //do that 
-
-    for each PLANET ( add to the scene )
-
-    // Create Sun
-    const sunGeometry = new SphereGeometry(0.5, 32, 32) // Larger sun
-    const sunMaterial = new MeshBasicMaterial({ color: 0xffd700 })
-    const sun = new Mesh(sunGeometry, sunMaterial)
-    scene.add(sun)
-
-    // Create Mars
-    const marsGeometry = new SphereGeometry(0.1, 32, 32)
-    const marsMaterial = new MeshBasicMaterial({ color: 0xffd700 })
-    const mars = new Mesh(marsGeometry, marsMaterial)
-    scene.add(mars)
-
-    // Create Saturn
-    const saturnGeometry = new SphereGeometry(0.2, 32, 32) // Larger Saturn
-    const saturnMaterial = new MeshBasicMaterial({ color: 0xffa500 })
-    const saturn = new Mesh(saturnGeometry, saturnMaterial)
-    scene.add(saturn)
-
-    // Create Mars orbit line
-    const marsOrbitPoints = new BufferGeometry()
-    const orbitMaterial = new LineBasicMaterial({ color: 0xaaaaaa })
-    const marsPoints = []
-    const numMarsPoints = 500
-
-    for (let i = 0; i <= numMarsPoints; i++) {
-      const time = (i / numMarsPoints) * 687
-      const position = getMarsPosition(time)
-      marsPoints.push(new Vector3(position.x, position.y, 0))
+    // Orbital path visualization
+    const numPoints = 600;
+    const orbitCoords = [];
+    for (let clock = 0; clock < numPoints; clock++) {
+      const point = propagate(clock, e, a, T, tau);
+      orbitCoords.push(new THREE.Vector3(point.x, point.y, point.z));
     }
 
-    marsOrbitPoints.setFromPoints(marsPoints)
-    const marsOrbitLine = new Line(marsOrbitPoints, orbitMaterial)
-    scene.add(marsOrbitLine)
+    // Orbit Line
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitCoords);
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
+    scene.add(orbitLine);
 
-    // Create Saturn orbit line
-    const saturnOrbitPoints = new BufferGeometry()
-    const saturnPoints = []
-    const numSaturnPoints = 500
+    // Central body (e.g., a planet or sun)
+    const centralBodyGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+    const centralBodyMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const centralBody = new THREE.Mesh(centralBodyGeometry, centralBodyMaterial);
+    scene.add(centralBody);
 
-    for (let i = 0; i <= numSaturnPoints; i++) {
-      const time = (i / numSaturnPoints) * 10746.25
-      const position = getSaturnPosition(time)
-      saturnPoints.push(new Vector3(position.x, position.y, 0))
-    }
+    // Orbiting body (e.g., a satellite)
+    const satelliteGeometry = new THREE.SphereGeometry(0.04, 32, 32);
+    const satelliteMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const satellite = new THREE.Mesh(satelliteGeometry, satelliteMaterial);
+    scene.add(satellite);
 
-    saturnOrbitPoints.setFromPoints(saturnPoints)
-    const saturnOrbitLine = new Line(saturnOrbitPoints, orbitMaterial)
-    scene.add(saturnOrbitLine)
+    // Initialize satellite's position at the first point of the orbit
+    satellite.position.set(orbitCoords[0].x, orbitCoords[0].y, orbitCoords[0].z);
 
-    // Setup camera
-    camera.position.z = 15
+    // Camera position
+    camera.position.z = 5;
 
-    // Animate Mars and Saturn orbits around the Sun
-    const clock = new Clock()
-    const animate = function () {
-      requestAnimationFrame(animate)
+    // Animation loop
+    let clock = 0;
+    const animate = () => {
+      requestAnimationFrame(animate);
 
-      // Mars movement
-      const marsTime = clock.getElapsedTime() * 10 // Speed factor for visible animation
-      const marsPosition = getMarsPosition(marsTime)
-      mars.position.set(marsPosition.x, marsPosition.y, 0)
+      // Update satellite position along the orbit
+      const point = orbitCoords[clock % numPoints]; // Ensure it loops
+      satellite.position.set(point.x, point.y, point.z);
 
-      // Saturn movement
-      const saturnTime = clock.getElapsedTime() * 1 // Slower speed factor for Saturn
-      const saturnPosition = getSaturnPosition(saturnTime)
-      saturn.position.set(saturnPosition.x, saturnPosition.y, 0)
+      // Increment time (with loop)
+      clock = (clock + 1) % numPoints;
 
-      // Render scene
-      renderer.render(scene, camera)
-    }
+      renderer.render(scene, camera);
+    };
 
-    animate()
+    animate();
+
 
     // Handle window resize
     const handleResize = () => {

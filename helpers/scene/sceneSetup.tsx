@@ -63,7 +63,7 @@ export const sceneSetup = (mountRef: React.RefObject<HTMLDivElement>) => {
 
   // Backdrop and lighting
   const ambient = new AmbientLight(0x303040)
-  const sunlight = new PointLight(0xffffff, 1000, 1000, 0.1)
+  const sunlight = new PointLight(0xffffff, 100000, 1000, 0.1)
   scene.add(sunlight, ambient)
 
 

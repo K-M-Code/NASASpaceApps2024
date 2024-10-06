@@ -1,17 +1,1 @@
-// DEFINE ARRAY OF PLANETS 
 
-
-CONVERT CSV INTO AN OBJECT 
-
-AND PUSH IT TO THE ARRAY 
-
-
-
-FOR EACH 
-
-
-const function  whatever () = () => {
-
-
-    // CREATE PLANETS AND RENDER 
-}
