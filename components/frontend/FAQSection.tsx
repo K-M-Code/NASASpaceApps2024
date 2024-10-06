@@ -92,7 +92,7 @@
 
     const FAQSection = () => {
     return (
-        <section className='container mx-auto'>
+        <section className='container mx-auto' id='faq'>
         <div className='m-4 rounded-xl bg-white p-8'>
             <h2 className='mb-4 text-2xl font-bold'>FAQs & Resources</h2>
             <Accordion type='single'>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
     import Image from 'next/image'
 
     import Header from '@/components/frontend/Header'
@@ -70,7 +71,7 @@
                     Play Now
                 </a>
                 <a
-                    href='/'
+                    href='/#faq'
                     className='text-md rounded-lg border-2 border-primary bg-transparent px-4 py-2 uppercase text-primary transition-all duration-300 ease-in-out hover:scale-105 hover:bg-primary hover:text-black'
                 >
                     Learn more
@@ -78,7 +79,7 @@
                 </div>
             </div>
             <div className='absolute right-0 top-0 h-full overflow-clip md:bottom-16 md:top-auto lg:-bottom-40 lg:h-auto lg:w-full lg:bg-contain'>
-                <img src={gamesHeroImage.src} className='m-auto' />
+                <img src={gamesHeroImage.src} className='m-auto' alt='Space Objects Image' />
             </div>
             </div>
         </div>

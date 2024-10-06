@@ -9,7 +9,7 @@ const Footer = () => {
     <div className='container mx-auto p-0'>
         <div className="flex flex-col lg:flex-row justify-around items-center">
           <Image src={LogoImage} alt="Logo" width={75} height={75} />
-          <p>Copyright &copy; 2024. All rights reserved.</p>
+          <p className='text-sm'>Copyright &copy; 2024. All rights reserved.</p>
             <div className="flex">
             {siteLinks.map((link) => (
               <Link
