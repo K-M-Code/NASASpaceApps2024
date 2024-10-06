@@ -1,5 +1,4 @@
     import Image from 'next/image'
-    import Link from 'next/link'
 
     import Header from '@/components/frontend/Header'
     import Footer from '@/components/frontend/Footer'
@@ -71,7 +70,7 @@
                     Play Now
                 </a>
                 <a
-                    href='#'
+                    href='/'
                     className='text-md rounded-lg border-2 border-primary bg-transparent px-4 py-2 uppercase text-primary transition-all duration-300 ease-in-out hover:scale-105 hover:bg-primary hover:text-black'
                 >
                     Learn more
@@ -126,12 +125,13 @@
                         )}
                         {section.link && (
                             <div className='mb-4 px-4 pt-4'>
-                            <Link
+                            <a
                                 href={section.link}
+                                target='_blank'
                                 className='rounded bg-primary px-4 py-2 text-black shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:border-transparent hover:bg-tertiary hover:text-white hover:shadow-xl'
                             >
                                 Read More
-                            </Link>
+                            </a>
                             </div>
                         )}
                         </div>
