@@ -13,7 +13,8 @@ export const celestialXAxis = new threeJS.Vector3(1, 0, 0);
 export const celestialZAxis = new threeJS.Vector3(0, -1, 0);
 export const eclInclination = 23.43928 * toRadians + Math.PI; // inclination of the ecliptic relative to the celestial sphere
 
-
+export const pointCount = 180;
+export const orbitPlot = { points: pointCount };
 
 // Time constants
 export const daysPerCentury = 36525.6363;
