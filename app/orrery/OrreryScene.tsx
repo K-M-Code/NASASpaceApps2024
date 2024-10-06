@@ -34,13 +34,14 @@ const OrreryScene = () => {
     const sunMaterial = new MeshBasicMaterial({ color: 0xffd700 })
     const sun = new Mesh(sunGeometry, sunMaterial)
     scene.add(sun)
-
     for (const planet of planets){
       const geometry = new SphereGeometry(planet.GEOMETRY[0], planet.GEOMETRY[1], planet.GEOMETRY[2])
-      
-      let texture = textureLoader.load(`resources/${planet.NAME}.jpg`)
-      if (!texture){
-        texture = textureLoader.load('/resources/asteroid.jpg')
+
+      let texture;
+      if(planet.HAS_TEXTURE) {
+        texture = textureLoader.load(`resources/${planet.NAME}.jpg`)
+      } else {
+        texture = textureLoader.load('resources/asteroid.jpg')
       }
       
       
@@ -64,8 +65,14 @@ const OrreryScene = () => {
 
         for (let i = 0; i <= planet.ORBIT.LINE; i++) {
           const time = (i / planet.ORBIT.LINE) * planet.ORBIT.ORBITAL_PERIOD
-          const position = propagate(time, planet.ORBIT.SEMI_MAJOR_AXIS, planet.ORBIT.ECCENTRICITY,planet.ORBIT.ORBITAL_PERIOD,0)
-          pointsArr.push(new Vector3(position.x, position.y, 0))
+          const position = propagate(time, planet.ORBIT.SEMI_MAJOR_AXIS, planet.ORBIT.ECCENTRICITY,planet.ORBIT.ORBITAL_PERIOD,0);
+          if (planet.HAS_TEXTURE == true){
+            pointsArr.push(new Vector3(position.x, position.y, 0))
+          }
+          else{
+            pointsArr.push(new Vector3(position.x+1, position.y+1.5, -1))
+            
+          }
         }
 
         orbitPoints.setFromPoints(pointsArr)
@@ -77,7 +84,8 @@ const OrreryScene = () => {
     }
 
     // Setup camera
-    camera.position.z = 15
+    camera.position.set(0, 5, 10)
+    camera.lookAt(0, 0, 0)
 
     // Animate Objects orbits around the Sun
     const clock = new Clock()
@@ -89,7 +97,13 @@ const OrreryScene = () => {
         if(planet.ORBIT){
           const time = clock.getElapsedTime() * 10 // Speed factor for visible animation
           const planetPosition = propagate(time, planet.ORBIT.SEMI_MAJOR_AXIS, planet.ORBIT.ECCENTRICITY,planet.ORBIT.ORBITAL_PERIOD,0)
-          planetMeshes[planet.NAME].position.set(planetPosition.x, planetPosition.y, 0)
+          if (planet.HAS_TEXTURE == false){
+            planetMeshes[planet.NAME].position.set(planetPosition.x+1, planetPosition.y+1.5, -1)
+          }
+          else{
+            planetMeshes[planet.NAME].position.set(planetPosition.x, planetPosition.y, 0)
+          }
+          
         }
       }
 
