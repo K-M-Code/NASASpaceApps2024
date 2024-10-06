@@ -19,7 +19,12 @@ const OrreryScene = () => {
   useEffect(() => {
     const { scene, camera, renderer, controls } = sceneSetup(mountRef)
 
-    
+    // Group sun = uafgoudfoguhdfg
+    arrays 
+
+    scene.add(groupedSun, groupedMars); //do that 
+
+    for each PLANET ( add to the scene )
 
     // Create Sun
     const sunGeometry = new SphereGeometry(0.5, 32, 32) // Larger sun
