@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const pgUser = process.env.PG_USER
     const pgAddress = process.env.PG_ADDRESS
     const pgPassword = process.env.PG_PASSWORD
-    const pgPort = process.env.PG_PORT
+    const pgPort = parseInt(process.env.PG_PORT || '5431', 10)
     const nasaSql = postgres({
       host: pgAddress,
       username: pgUser,
